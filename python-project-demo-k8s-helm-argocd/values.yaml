@@ -8,7 +8,7 @@ image:
   repository: rushi2323/python-project-demo-k8s
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.1"
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
