@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'rushi2323'
-        IMAGE_NAME = 'rushi2323/python-project-demo-k8s'
+        IMAGE_NAME = 'python-project-demo-k8s'
         IMAGE_TAG = 'latest'
     }
 
