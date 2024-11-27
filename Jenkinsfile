@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'rushi2323'
         IMAGE_NAME = 'python-project-demo-k8s'
-        IMAGE_TAG = 'latest'
+        IMAGE_TAG = '1.0.0'
     }
 
     stages {
