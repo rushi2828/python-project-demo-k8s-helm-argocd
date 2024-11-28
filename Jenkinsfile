@@ -48,7 +48,7 @@ pipeline {
                 script {
                     '''
                     kubectl set image deployment/$IMAGE_NAME $IMAGE_NAME=$DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG -n default || kubectl create deployment $IMAGE_NAME --image=$DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG -n default
-                    kubectl expose deployment $IMAGE_NAME --type=LoadBalancer --port=80 --target-port=5000 -n default || true
+                    kubectl expose deployment $IMAGE_NAME --type=NodePort --port=80 --target-port=5000 -n default || true
                     '''
                 }
             }
