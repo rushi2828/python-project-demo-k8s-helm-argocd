@@ -2,14 +2,15 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'rushi2323'
-        IMAGE_NAME = 'python-project-demo-k8s'
-        IMAGE_TAG = '1.0.0'
+        DOCKER_REGISTRY = 'your-dockerhub-username'
+        IMAGE_NAME = 'flask-app'
+        IMAGE_TAG = 'latest'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
+                // Checkout source code from the Git repository
                 checkout scm
             }
         }
@@ -17,17 +18,18 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    'docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .'
+                    sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
 
-        stage('Test Docker Image') {
+        stage('Test Application') {
             steps {
                 script {
-                    'docker run --rm -p 5000:5000 -d $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
-                    'sleep 5' // Give the container time to start
-                    'curl -f http://localhost:5000'
+                    // Run the Docker container and perform simple tests
+                    sh "docker run --rm -d -p 5000:5000 ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "sleep 5" // Wait for the app to start
+                    sh "curl -f http://localhost:5000"
                 }
             }
         }
@@ -35,21 +37,10 @@ pipeline {
         stage('Push to Docker Registry') {
             steps {
                 script {
-                    // withCredentials([usernamePassword(credentialsId: 'DOCKER_REGISTRY_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        'docker login -u $DOCKER_USER -p $DOCKER_PASS'
-                        'docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
-                    // }
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    '''
-                    kubectl set image deployment/$IMAGE_NAME $IMAGE_NAME=$DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG -n default || kubectl create deployment $IMAGE_NAME --image=$DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG -n default
-                    kubectl expose deployment $IMAGE_NAME --type=NodePort --port=80 --target-port=5000 -n default || true
-                    '''
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_REGISTRY_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                        sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    }
                 }
             }
         }
@@ -57,13 +48,14 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline completed.'
+            echo 'Pipeline execution completed.'
         }
         success {
-            echo 'Pipeline succeeded.'
+            echo 'Pipeline completed successfully!'
         }
         failure {
             echo 'Pipeline failed.'
         }
     }
 }
+
