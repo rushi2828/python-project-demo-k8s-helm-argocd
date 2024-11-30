@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'your-dockerhub-username'
-        IMAGE_NAME = 'flask-app'
-        IMAGE_TAG = 'latest'
+        DOCKER_REGISTRY = 'rushi2323'
+        IMAGE_NAME = 'python-project-demo-k8s'
+        IMAGE_TAG = '1.0.0'
     }
 
     stages {
